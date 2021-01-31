@@ -21,6 +21,7 @@ struct NomanatimResponseTypeCheck: Decodable {
 }
 
 enum RegionError: Error {
+    case regionNotFound
     case invalidURL
     case unknownShapeDefinition
     case unknownGeometryType

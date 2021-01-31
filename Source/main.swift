@@ -17,7 +17,7 @@ Server(errorRenderer: BasicErrorRenderer())
             .on(.get(.root))
         
         GetRegionGeoJson()
-            .on(.get("/\(\.id)"))
+            .on(.get("/\(\.id)/geojson"))
     }
     .environmentObject(Database())
     .environmentObject(URLSession())
