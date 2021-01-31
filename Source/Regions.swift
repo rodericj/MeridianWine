@@ -13,7 +13,7 @@ struct GetRegions: Responder {
     @EnvironmentObject var database: Database
 
     func execute() throws -> Response {
-        JSON(database.regionTree)
+        try JSON(database.fetchAllInvoices())
             .allowCORS()
     }
 

@@ -6,37 +6,66 @@
 //
 
 import Foundation
+import SwiftgreSQL
+import Meridian
 
-final class Database {
-    struct MigrationRegion: Encodable {
-        let osmID: Int
-        let title: String
-        let children: [MigrationRegion]
+struct DatabaseRegion: Codable, Equatable {
+    let id: UUID
+    let osmID: Int
+    let title: String
+    let parentID: UUID?
+    
+    enum CodingKeys: String, CodingKey {
+        case osmID, id, title
+        case parentID = "parent_id"
     }
-    let regionTree = [
-        MigrationRegion(osmID: 1403916,  title: "France", children: [
-            MigrationRegion(osmID: 7405, title: "Gironde", children: [
-                MigrationRegion(osmID: 963201, title: "Saint-Estèphe", children: []),
-                MigrationRegion(osmID: 89248, title: "Saint-Émilion", children: []),
-                MigrationRegion(osmID: 92963, title: "Barsac", children: []),
-                MigrationRegion(osmID: 58582, title: "Margaux", children: [])
-            ]),
-            MigrationRegion(osmID: 3792878, title: "Bourgogne", children: [
-                MigrationRegion(osmID: 7424, title: "Côte-d'Or", children: [
-                    MigrationRegion(osmID: 1684815, title: "Beaune", children: [
-                        MigrationRegion(osmID: 127321, title: "Volnay", children: []),
-                    ]),
-                ]),
+}
 
-            ])
-        ]),
-        MigrationRegion(osmID: 1311341, title: "Spain", children: [
-            MigrationRegion(osmID: 6426654, title: "Rioja", children: [])
-        ]),
-        MigrationRegion(osmID: 365331, title: "Italy", children: [
-            MigrationRegion(osmID: 40095, title: "Apulia", children: []),
-            MigrationRegion(osmID: 41977, title: "Tuscany", children: []),
-            MigrationRegion(osmID: 42004, title: "Umbria", children: [])
-        ])
-    ]
+class Region: Encodable {
+    let id: UUID
+    let title: String
+    let osmID: Int
+    var children: [Region]
+    init(_ dbRegion: DatabaseRegion) {
+        id = dbRegion.id
+        title = dbRegion.title
+        osmID = dbRegion.osmID
+        children = []
+    }
+}
+
+public final class Database {
+    public init() { }
+    let connection = try! Connection(connInfo: "postgres://roderic@localhost:5432/regions")
+    func fetchAllInvoices() throws -> [Region] {
+        let databaseResponse = try connection.execute("SELECT * FROM osmregion")
+            .decode(DatabaseRegion.self)
+        
+        // Setup the mapping
+        let idToRegionMapping = databaseResponse.reduce([UUID: Region]()) { intermediate, dbRegion -> [UUID: Region] in
+            var intermediate = intermediate
+            intermediate[dbRegion.id] = Region(dbRegion)
+            return intermediate
+        }
+        
+        // iterate over the response, for each, append it to it's parent in the mapping
+        databaseResponse.forEach { dbRegion in
+            if let parentID = dbRegion.parentID,
+               let regionObject = idToRegionMapping[dbRegion.id],
+               let parent = idToRegionMapping[parentID] {
+                parent.children.append(regionObject)
+            }
+        }
+                
+        // iterate over the response find IDs of all items with nil parents
+        let idsToSend = databaseResponse
+            .filter { $0.parentID == nil }
+            .map { $0.id }
+            
+        // itereate one last time to only send the parentless ones
+        return idToRegionMapping.filter { dict in
+            idsToSend.contains(dict.key)
+        }.map { $0.value}
+        
+    }
 }
