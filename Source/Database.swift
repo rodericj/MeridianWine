@@ -36,7 +36,16 @@ class Region: Encodable {
 
 public final class Database {
     public init() { }
-    let connection = try! Connection(connInfo: "postgres://roderic@localhost:5432/regions")
+    let connection: Connection = {
+        guard let databaseURL = ProcessInfo.processInfo.environment["DATABASE_URL"] else {
+            fatalError("databaseURL is not set. Please set the environment variable")
+        }
+        do {
+            return try Connection(connInfo: databaseURL)
+        } catch {
+            fatalError(error.localizedDescription)
+        }
+    }()
     
     func updateParent(parent: UUID, child: UUID) throws -> Region? {
         let query = "UPDATE osmregion SET parent_id = '\(parent)' WHERE id = '\(child)';"
