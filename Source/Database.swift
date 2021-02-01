@@ -37,6 +37,19 @@ class Region: Encodable {
 public final class Database {
     public init() { }
     let connection = try! Connection(connInfo: "postgres://roderic@localhost:5432/regions")
+    
+    func insertRegion(nominatim: NomanatimResponseTypeCheck) throws -> Region? {
+        let uuid = UUID()
+        let query = "INSERT INTO osmregion VALUES('\(uuid)', '\(nominatim.localname)', \(nominatim.osmID));"
+        try connection.execute(query)
+        
+        // Now that it is inserted, fetch the object
+        let fetchQuery = "Select * from osmregion where id = '\(uuid)';"
+        return try connection.execute(fetchQuery)
+            .decode(DatabaseRegion.self).compactMap { Region($0)}.first
+
+    }
+   
     func fetchRegion(uuid: UUID) throws -> Region? {
         let query = "SELECT * FROM osmregion where id = '\(uuid)'"
         print(query)
@@ -44,6 +57,7 @@ public final class Database {
             .decode(DatabaseRegion.self).compactMap { Region($0)}.first
 
     }
+    
     func fetchAllInvoices() throws -> [Region] {
         let databaseResponse = try connection.execute("SELECT * FROM osmregion")
             .decode(DatabaseRegion.self)
@@ -76,3 +90,4 @@ public final class Database {
         
     }
 }
+

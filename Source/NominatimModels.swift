@@ -11,12 +11,13 @@ import Foundation
 struct NomanatimResponseTypeCheck: Decodable {
     let osmID: Int
     let geometry: Geometry
+    let localname: String
     struct Geometry: Decodable {
         let type: String
     }
     enum CodingKeys: String, CodingKey {
         case osmID = "osm_id"
-        case geometry
+        case geometry, localname
     }
 }
 
@@ -32,7 +33,7 @@ struct NomanatimResponseMultiPolygon: Decodable {
     let localname: String
     let geometry: Geometry
     struct Geometry: Codable, Hashable {
-        let coordinates: [[[[Double]]]]
+        let coordinates: [[[[Double]]]] // 4 parens
         let type: String
     }
     enum CodingKeys: String, CodingKey {
@@ -47,7 +48,7 @@ struct NomanatimResponsePolygon: Decodable {
     let localname: String
     let geometry: Geometry
     struct Geometry: Codable {
-        let coordinates: [[[Double]]]
+        let coordinates: [[[Double]]] // only 3 parens
         let type: String
     }
     enum CodingKeys: String, CodingKey {
