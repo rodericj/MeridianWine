@@ -16,8 +16,11 @@ Server(errorRenderer: BasicErrorRenderer())
         GetRegions()
             .on(.get(.root))
         
-        PostRegions()
+        PostRegion()
             .on(.post(.root))
+        
+        PatchRegion()
+            .on(.patch("/\(\.childID)"))
 
         GetRegionGeoJson()
             .on(.get("/\(\.id)/geojson"))

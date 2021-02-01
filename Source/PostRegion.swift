@@ -8,14 +8,13 @@
 import Meridian
 import Foundation
 
-struct PostRegions: Responder {
+struct PostRegion: Responder {
     @EnvironmentObject var database: Database
     @QueryParameter("osmid") var osmID: Int
 
     func execute() throws -> Response {
         let fetch = try fetchFromNominatim(regionID: osmID)
-        return try JSON(database.insertRegion(nominatim: fetch))
-            .allowCORS()
+        return try JSON(database.insertRegion(nominatim: fetch)).allowCORS()
     }
     
     private func fetchFromNominatim(regionID: Int) throws -> NomanatimResponseTypeCheck {

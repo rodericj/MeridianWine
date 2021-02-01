@@ -38,6 +38,17 @@ public final class Database {
     public init() { }
     let connection = try! Connection(connInfo: "postgres://roderic@localhost:5432/regions")
     
+    func updateParent(parent: UUID, child: UUID) throws -> Region? {
+        let query = "UPDATE osmregion SET parent_id = '\(parent)' WHERE id = '\(child)';"
+        try connection.execute(query)
+        
+        // Now that it is inserted, fetch the object
+        let fetchQuery = "SELECT * FROM osmregion WHERE id = '\(child)';"
+        return try connection.execute(fetchQuery)
+            .decode(DatabaseRegion.self).compactMap { Region($0)}.first
+
+    }
+    
     func insertRegion(nominatim: NomanatimResponseTypeCheck) throws -> Region? {
         let uuid = UUID()
         let query = "INSERT INTO osmregion VALUES('\(uuid)', '\(nominatim.localname)', \(nominatim.osmID));"
@@ -52,7 +63,6 @@ public final class Database {
    
     func fetchRegion(uuid: UUID) throws -> Region? {
         let query = "SELECT * FROM osmregion WHERE id = '\(uuid)'"
-        print(query)
         return try connection.execute(query)
             .decode(DatabaseRegion.self).compactMap { Region($0)}.first
 
