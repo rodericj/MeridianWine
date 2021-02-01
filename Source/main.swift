@@ -12,6 +12,7 @@ import Meridian
 import FoundationNetworking
 #endif
 
+let configuration = URLSessionConfiguration.default
 Backtrace.install()
 
 Server(errorRenderer: BasicErrorRenderer())
@@ -30,5 +31,5 @@ Server(errorRenderer: BasicErrorRenderer())
             .on(.get("/\(\.id)/geojson"))
     }
     .environmentObject(Database())
-    .environmentObject(URLSession())
+    .environmentObject(URLSession(configuration: configuration))
     .listen()
