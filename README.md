@@ -1,14 +1,15 @@
 # MeridianWine
 
-MeridianWine provides access to all (pending) of the wine regions around the world through a simple REST api. 
+MeridianWine provides access to all (pending) of the wine regions around the world through a simple REST api. It leverages the [Meridian](https://github.com/khanlou/Meridian) server side swift framework.
 
+This is the second iteration of 
 ## Routes
 
 ### GET /region
 
 This will return a nested tree structure containing all of the wine regions in the database. At the top level are country regions. Below that are sub regions, below those are more subregions. It's subregions all the way down.
 
-```javascript
+``` javascript
 
 {
     "id": "20013FA8-CD71-4F30-82C5-C3C512B9C914",
@@ -59,3 +60,15 @@ POSTing an osmid will create a reference in database for the appropriate region.
 
 PATCHing a region will update it's parent. This establishes the tree structure.
 
+
+## Setup
+MeridianWine is deployed to Heroku. It uses Postgresql for it's data store. 
+
+## Clients
+
+
+## Errors encountered
+### No process running
+`2021-02-01T05:45:55.191188+00:00 heroku[router]: at=error code=H14 desc="No web processes running" method=GET path="/region" host=tranquil-garden-84812.herokuapp.com request_id=40190aa2-4add-4bd5-99da-76ced51e9abf fwd="108.225.76.255" dyno= connect= service= status=503 bytes= protocol=http`
+
+Stackoverlow'd to [here](https://stackoverflow.com/questions/41804507/h14-error-in-heroku-no-web-processes-running) where it was suggested that we scale up with `heroku ps:scale web=1` but that didn't work.
