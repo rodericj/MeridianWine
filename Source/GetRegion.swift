@@ -9,6 +9,10 @@ import Foundation
 import GEOSwift
 import Meridian
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 struct GetRegions: Responder {
     @EnvironmentObject var database: Database
     

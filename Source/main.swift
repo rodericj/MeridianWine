@@ -8,6 +8,10 @@ import Foundation
 import Backtrace
 import Meridian
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 Backtrace.install()
 
 Server(errorRenderer: BasicErrorRenderer())

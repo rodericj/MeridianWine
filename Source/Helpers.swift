@@ -8,6 +8,10 @@
 import Foundation
 import Meridian
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 struct IDParameter: URLParameterKey {
     public typealias DecodeType = String
 }

@@ -8,6 +8,10 @@
 import Meridian
 import Foundation
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 struct PostRegion: Responder {
     @EnvironmentObject var database: Database
     @QueryParameter("osmid") var osmID: Int
