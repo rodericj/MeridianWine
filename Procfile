@@ -1,1 +1,2 @@
-web: Run serve --host 0.0.0.0 --port
+web: Run serve --hostname 0.0.0.0 --port
+
