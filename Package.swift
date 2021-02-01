@@ -2,9 +2,9 @@
 import PackageDescription
 
 let package = Package(
-    name: "MeridianWine",
+    name: "App",
     products: [
-        .executable(name: "MeridianWine", targets: ["MeridianWine"]),
+        .executable(name: "App", targets: ["MeridianWine"]),
     ],
     dependencies: [
         .package(url: "https://github.com/rodericj/Meridian", from: "0.1.2"),
