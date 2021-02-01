@@ -2,7 +2,8 @@
 
 MeridianWine provides access to all (pending) of the wine regions around the world through a simple REST api. It leverages the [Meridian](https://github.com/khanlou/Meridian) server side swift framework.
 
-This is the second iteration of 
+This is the second iteration of a [WineRegionServer](https://github.com/rodericj/WineRegionServer). This one is meant to be slimmer than Vapor as it needs to do less than Vapor can do. Also Meridian sounds cool.
+
 ## Routes
 
 ### GET /region
@@ -62,13 +63,18 @@ PATCHing a region will update it's parent. This establishes the tree structure.
 
 
 ## Setup
+
 MeridianWine is deployed to Heroku. It uses Postgresql for it's data store. 
+We use the [vapor buildpack](https://github.com/vapor-community/heroku-buildpack/) and it seems to work fine.
 
 ## Clients
 
+The [WineRegion App](https://github.com/rodericj/WineCellarApp) consumes the tree and presents it in a 
+
 
 ## Errors encountered
+
 ### No process running
 `2021-02-01T05:45:55.191188+00:00 heroku[router]: at=error code=H14 desc="No web processes running" method=GET path="/region" host=tranquil-garden-84812.herokuapp.com request_id=40190aa2-4add-4bd5-99da-76ced51e9abf fwd="108.225.76.255" dyno= connect= service= status=503 bytes= protocol=http`
 
-Stackoverlow'd to [here](https://stackoverflow.com/questions/41804507/h14-error-in-heroku-no-web-processes-running) where it was suggested that we scale up with `heroku ps:scale web=1` but that didn't work.
+Stackoverlow'd to [here](https://stackoverflow.com/questions/41804507/h14-error-in-heroku-no-web-processes-running) where it was suggested that we scale up with `heroku ps:scale web=1` but that didn't work. Attempted to remove and then re-add the build pack and update the Procfile.
