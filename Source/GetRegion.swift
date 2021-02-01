@@ -44,7 +44,7 @@ struct GetRegionGeoJson: Responder {
         
         let decoder = JSONDecoder()
         
-        let nominatimTypeCheck =  try decoder.decode(NominatimResponseTypeCheck.self, from: data).geometry.type
+        let nominatimTypeCheck = try decoder.decode(NominatimResponseTypeCheck.self, from: data).geometry.type
         
         let geometry: Encodable
         switch nominatimTypeCheck {
