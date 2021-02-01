@@ -21,7 +21,7 @@ struct PostRegion: Responder {
         return try JSON(database.insertRegion(nominatim: fetch)).allowCORS()
     }
     
-    private func fetchFromNominatim(regionID: Int) throws -> NomanatimResponseTypeCheck {
+    private func fetchFromNominatim(regionID: Int) throws -> NominatimResponseTypeCheck {
 
         guard let url = URLComponents.nominatimURL(id: String(osmID)) else {
             throw RegionError.invalidURL
@@ -31,7 +31,7 @@ struct PostRegion: Responder {
         let (data, _) = try URLSession.shared.send(request: request)
         let decoder = JSONDecoder()
 
-        let nomanatimResponse =  try decoder.decode(NomanatimResponseTypeCheck.self, from: data)
-        return nomanatimResponse
+        let nominatimResponse =  try decoder.decode(NominatimResponseTypeCheck.self, from: data)
+        return nominatimResponse
     }
 }

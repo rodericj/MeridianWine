@@ -44,14 +44,14 @@ struct GetRegionGeoJson: Responder {
         
         let decoder = JSONDecoder()
         
-        let nomanatimTypeCheck =  try decoder.decode(NomanatimResponseTypeCheck.self, from: data).geometry.type
+        let nominatimTypeCheck =  try decoder.decode(NominatimResponseTypeCheck.self, from: data).geometry.type
         
         let geometry: Encodable
-        switch nomanatimTypeCheck {
+        switch nominatimTypeCheck {
         case "MultiPolygon":
-            geometry = try decoder.decode(NomanatimResponseMultiPolygon.self, from: data).geometry
+            geometry = try decoder.decode(NominatimResponseMultiPolygon.self, from: data).geometry
         case "Polygon":
-            geometry =  try decoder.decode(NomanatimResponsePolygon.self, from: data).geometry
+            geometry =  try decoder.decode(NominatimResponsePolygon.self, from: data).geometry
             
         default:
             throw RegionError.unknownGeometryType

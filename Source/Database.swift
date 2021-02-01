@@ -58,7 +58,7 @@ public final class Database {
 
     }
     
-    func insertRegion(nominatim: NomanatimResponseTypeCheck) throws -> Region? {
+    func insertRegion(nominatim: NominatimResponseTypeCheck) throws -> Region? {
         let uuid = UUID()
         let query = "INSERT INTO osmregion VALUES('\(uuid)', '\(nominatim.localname)', \(nominatim.osmID));"
         try connection.execute(query)

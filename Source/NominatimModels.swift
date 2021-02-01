@@ -8,7 +8,7 @@
 import Foundation
 
 
-struct NomanatimResponseTypeCheck: Decodable {
+struct NominatimResponseTypeCheck: Decodable {
     let osmID: Int
     let geometry: Geometry
     let localname: String
@@ -28,7 +28,7 @@ enum RegionError: Error {
     case unknownGeometryType
 }
 
-struct NomanatimResponseMultiPolygon: Decodable {
+struct NominatimResponseMultiPolygon: Decodable {
     let osmID: Int
     let localname: String
     let geometry: Geometry
@@ -43,7 +43,7 @@ struct NomanatimResponseMultiPolygon: Decodable {
        }
 }
 
-struct NomanatimResponsePolygon: Decodable {
+struct NominatimResponsePolygon: Decodable {
     let osmID: Int
     let localname: String
     let geometry: Geometry
