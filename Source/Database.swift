@@ -44,20 +44,22 @@ public final class Database {
         try connection.execute(query)
         
         // Now that it is inserted, fetch the object
-        let fetchQuery = "Select * from osmregion where id = '\(uuid)';"
+        let fetchQuery = "SELECT * FROM osmregion WHERE id = '\(uuid)';"
         return try connection.execute(fetchQuery)
             .decode(DatabaseRegion.self).compactMap { Region($0)}.first
 
     }
    
     func fetchRegion(uuid: UUID) throws -> Region? {
-        let query = "SELECT * FROM osmregion where id = '\(uuid)'"
+        let query = "SELECT * FROM osmregion WHERE id = '\(uuid)'"
         print(query)
         return try connection.execute(query)
             .decode(DatabaseRegion.self).compactMap { Region($0)}.first
 
     }
-    
+}
+
+extension Database {
     func fetchAllInvoices() throws -> [Region] {
         let databaseResponse = try connection.execute("SELECT * FROM osmregion")
             .decode(DatabaseRegion.self)

@@ -13,13 +13,12 @@ struct PostRegions: Responder {
     @QueryParameter("osmid") var osmID: Int
 
     func execute() throws -> Response {
-        // TODO
-        let fetch = try fetchFromNomanatim(regionID: osmID)
+        let fetch = try fetchFromNominatim(regionID: osmID)
         return try JSON(database.insertRegion(nominatim: fetch))
             .allowCORS()
     }
     
-    private func fetchFromNomanatim(regionID: Int) throws -> NomanatimResponseTypeCheck {
+    private func fetchFromNominatim(regionID: Int) throws -> NomanatimResponseTypeCheck {
 
         guard let url = URLComponents.nominatimURL(id: String(osmID)) else {
             throw RegionError.invalidURL
