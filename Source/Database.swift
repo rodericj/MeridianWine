@@ -48,26 +48,14 @@ public final class Database {
     }()
     
     func updateParent(parent: UUID, child: UUID) throws -> Region? {
-        let query = "UPDATE osmregion SET parent_id = '\(parent)' WHERE id = '\(child)';"
-        try connection.execute(query)
-        
-        // Now that it is inserted, fetch the object
-        let fetchQuery = "SELECT * FROM osmregion WHERE id = '\(child)';"
-        return try connection.execute(fetchQuery)
-            .decode(DatabaseRegion.self).compactMap { Region($0)}.first
-
+        let query = "UPDATE osmregion SET parent_id = '\(parent)' WHERE id = '\(child)' RETURNING *;"
+        return try connection.execute(query).decode(DatabaseRegion.self).map { Region($0) }.first
     }
     
     func insertRegion(nominatim: NominatimResponseTypeCheck) throws -> Region? {
         let uuid = UUID()
-        let query = "INSERT INTO osmregion VALUES('\(uuid)', '\(nominatim.localname)', \(nominatim.osmID));"
-        try connection.execute(query)
-        
-        // Now that it is inserted, fetch the object
-        let fetchQuery = "SELECT * FROM osmregion WHERE id = '\(uuid)';"
-        return try connection.execute(fetchQuery)
-            .decode(DatabaseRegion.self).compactMap { Region($0)}.first
-
+        let query = "INSERT INTO osmregion VALUES('\(uuid)', '\(nominatim.localname)', \(nominatim.osmID)) RETURNING *;"
+        return try connection.execute(query).decode(DatabaseRegion.self).map { Region($0) }.first
     }
    
     func fetchRegion(uuid: UUID) throws -> Region? {
