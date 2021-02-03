@@ -15,7 +15,7 @@ import FoundationNetworking
 struct PostRegion: Responder {
     @EnvironmentObject var database: Database
     @QueryParameter("osmid") var osmID: Int
-
+    
     func execute() throws -> Response {
         let fetch = try fetchFromNominatim(regionID: osmID)
         return try JSON(database.insertRegion(nominatim: fetch)).allowCORS()
@@ -31,7 +31,13 @@ struct PostRegion: Responder {
         let (data, _) = try URLSession.shared.send(request: request)
         let decoder = JSONDecoder()
 
-        let nominatimResponse =  try decoder.decode(NominatimResponseTypeCheck.self, from: data)
-        return nominatimResponse
+        do {
+            return try decoder.decode(NominatimResponseTypeCheck.self, from: data)
+        } catch {
+            let errorResponse = try? decoder.decode(NominatimErrorResponse.self, from: data)
+            print(errorResponse)
+            print(error)
+            throw error
+        }
     }
 }

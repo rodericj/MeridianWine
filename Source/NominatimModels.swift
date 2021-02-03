@@ -7,6 +7,13 @@
 
 import Foundation
 
+struct NominatimErrorResponse: Decodable {
+    struct NominatimError: Decodable {
+        let code: Int
+        let message: String
+    }
+    let error: NominatimError
+}
 
 struct NominatimResponseTypeCheck: Decodable {
     let osmID: Int
