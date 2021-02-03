@@ -54,15 +54,16 @@ public final class Database {
     
     func insertRegion(nominatim: NominatimResponseTypeCheck) throws -> Region? {
         let uuid = UUID()
-        let query = "INSERT INTO osmregion VALUES('\(uuid.uuidString)', '\(nominatim.localname)', \(nominatim.osmID)) RETURNING *;"
-        return try connection.execute(query).decode(DatabaseRegion.self).map { Region($0) }.first
+        let queryTemplate = "INSERT INTO osmregion VALUES($1, $2, $3) RETURNING *;"
+        return try connection
+            .execute(queryTemplate, [uuid.uuidString, nominatim.localname, nominatim.osmID])
+            .decode(DatabaseRegion.self).map { Region($0) }.first
     }
    
     func fetchRegion(uuid: UUID) throws -> Region? {
         let query = "SELECT * FROM osmregion WHERE id = '\(uuid.uuidString)'"
         return try connection.execute(query)
             .decode(DatabaseRegion.self).compactMap { Region($0)}.first
-
     }
 }
 
