@@ -35,7 +35,7 @@ struct PostRegion: Responder {
             return try decoder.decode(NominatimResponseTypeCheck.self, from: data)
         } catch {
             let errorResponse = try? decoder.decode(NominatimErrorResponse.self, from: data)
-            print(errorResponse)
+            print(errorResponse ??  "no error response object")
             print(error)
             throw error
         }

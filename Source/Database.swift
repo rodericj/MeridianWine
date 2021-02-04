@@ -9,6 +9,9 @@ import Foundation
 import SwiftgreSQL
 import Meridian
 
+struct Status: Codable {
+    let status: String
+}
 struct DatabaseRegion: Codable, Equatable {
     let id: UUID
     let osmID: Int
@@ -46,6 +49,12 @@ public final class Database {
             fatalError(error.localizedDescription)
         }
     }()
+    
+    func deleteRegion(region: UUID) throws -> Status {
+        try connection.execute("DELETE from osmregion WHERE id = $1 RETURNING *;",
+                                      [region.uuidString])
+        return Status(status: "OK")
+    }
     
     func updateParent(parent: UUID, child: UUID) throws -> Region? {
         return try connection.execute("UPDATE osmregion SET parent_id = $1 WHERE id = $2 RETURNING *;",
