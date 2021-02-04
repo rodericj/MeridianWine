@@ -24,6 +24,10 @@ struct DatabaseRegion: Codable, Equatable {
     }
 }
 
+struct JsonResponse<T: Encodable>: Encodable {
+    let result: T
+}
+
 class Region: Encodable {
     let id: UUID
     let title: String
@@ -56,19 +60,27 @@ public final class Database {
         return Status(status: "OK")
     }
     
-    func updateParent(parent: UUID, child: UUID) throws -> Region? {
+    func updateParent(parent: UUID, child: UUID) throws -> JsonResponse<Region>? {
         return try connection.execute("UPDATE osmregion SET parent_id = $1 WHERE id = $2 RETURNING *;",
                                       [parent.uuidString, child.uuidString])
-            .decode(DatabaseRegion.self).map { Region($0) }
+            .decode(DatabaseRegion.self).map { JsonResponse(result: Region($0)) }
             .first
     }
     
-    func insertRegion(nominatim: NominatimResponseTypeCheck) throws -> Region? {
+    // TODO make the response something like JsonResponse<Result<Region, Error>> if possible
+    func insertRegion(nominatim: NominatimResponseTypeCheck) throws -> JsonResponse<Region>? {
         let uuid = UUID()
         let queryTemplate = "INSERT INTO osmregion VALUES($1, $2, $3) RETURNING *;"
-        return try connection
-            .execute(queryTemplate, [uuid.uuidString, nominatim.localname, nominatim.osmID])
-            .decode(DatabaseRegion.self).map { Region($0) }.first
+        do {
+            let ret = try connection
+                .execute(queryTemplate, [uuid.uuidString, nominatim.localname, nominatim.osmID])
+                .decode(DatabaseRegion.self).map { JsonResponse(result: Region($0)) }
+            print(ret)
+            return ret.first
+        } catch {
+            print(error)
+            throw error
+        }
     }
    
     func fetchRegion(uuid: UUID) throws -> Region? {
