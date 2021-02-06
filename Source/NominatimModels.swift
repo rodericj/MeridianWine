@@ -28,13 +28,6 @@ struct NominatimResponseTypeCheck: Decodable {
     }
 }
 
-enum RegionError: Error {
-    case regionNotFound
-    case invalidURL
-    case unknownShapeDefinition
-    case unknownGeometryType
-}
-
 struct NominatimResponseMultiPolygon: Decodable {
     let osmID: Int
     let localname: String

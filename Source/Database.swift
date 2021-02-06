@@ -12,6 +12,7 @@ import Meridian
 struct Status: Codable {
     let status: String
 }
+
 struct DatabaseRegion: Codable, Equatable {
     let id: UUID
     let osmID: Int
@@ -67,7 +68,6 @@ public final class Database {
             .first
     }
     
-    // TODO make the response something like JsonResponse<Result<Region, Error>> if possible
     func insertRegion(nominatim: NominatimResponseTypeCheck) throws -> JsonResponse<Region>? {
         let uuid = UUID()
         let queryTemplate = "INSERT INTO osmregion VALUES($1, $2, $3) RETURNING *;"
@@ -78,6 +78,9 @@ public final class Database {
             print(ret)
             return ret.first
         } catch {
+            if let pgError = error as? PostgreSQLError {
+                throw pgError
+            }
             print(error)
             throw error
         }
