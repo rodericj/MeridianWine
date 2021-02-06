@@ -94,7 +94,7 @@ public final class Database {
 }
 
 extension Database {
-    func fetchAllInvoices() throws -> [Region] {
+    func fetchAllRegions() throws -> JsonResponse<[Region]>?  {
         let databaseResponse = try connection.execute("SELECT * FROM osmregion")
             .decode(DatabaseRegion.self)
         
@@ -120,10 +120,9 @@ extension Database {
             .map { $0.id }
             
         // itereate one last time to only send the parentless ones
-        return idToRegionMapping.filter { dict in
+        return JsonResponse(result: idToRegionMapping.filter { dict in
             idsToSend.contains(dict.key)
-        }.map { $0.value}
-        
+        }.map { $0.value})
     }
 }
 
