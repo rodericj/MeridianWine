@@ -25,7 +25,7 @@ Server(errorRenderer: BasicErrorRenderer())
             .on(.post(.root))
        
         DeleteRegion()
-            .on(.delete("/\(\.childID)"))
+            .on(.delete("/\(\.regionID)"))
         
         PatchRegion()
             .on(.patch("/\(\.childID)"))

@@ -28,7 +28,7 @@ struct NominatimResponseTypeCheck: Decodable {
     }
 }
 
-struct NominatimResponseMultiPolygon: Decodable {
+struct NominatimResponseMultiPolygon: Codable {
     let osmID: Int
     let localname: String
     let geometry: Geometry
@@ -43,12 +43,28 @@ struct NominatimResponseMultiPolygon: Decodable {
        }
 }
 
-struct NominatimResponsePolygon: Decodable {
+struct NominatimResponsePolygon: Codable {
     let osmID: Int
     let localname: String
     let geometry: Geometry
     struct Geometry: Codable {
         let coordinates: [[[Double]]] // only 3 parens
+        let type: String
+    }
+    enum CodingKeys: String, CodingKey {
+           case osmID = "osm_id"
+           case localname
+        case geometry
+       }
+}
+
+
+struct NominatimResponseGenericCoordinates<T: Codable>: Codable {
+    let osmID: Int
+    let localname: String
+    let geometry: Geometry
+    struct Geometry: Codable {
+        let coordinates: T
         let type: String
     }
     enum CodingKeys: String, CodingKey {

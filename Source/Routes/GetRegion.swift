@@ -46,21 +46,57 @@ struct GetRegionGeoJson: Responder {
         
         let nominatimTypeCheck = try decoder.decode(NominatimResponseTypeCheck.self, from: data).geometry.type
         
-        let geometry: Encodable
         switch nominatimTypeCheck {
         case "MultiPolygon":
-            geometry = try decoder.decode(NominatimResponseMultiPolygon.self, from: data).geometry
+            let geometry = try decoder.decode(NominatimResponseMultiPolygon.self, from: data).geometry
+            let wrapper = GeoJsonWrapperMultiPolygon(type: "FeatureCollection",
+                                                     features: [.init(type: "Feature",
+                                                                      properties: [:],
+                                                                      geometry: geometry)])
+            return JSON(wrapper).allowCORS()
         case "Polygon":
-            geometry =  try decoder.decode(NominatimResponsePolygon.self, from: data).geometry
+            let geometry = try decoder.decode(NominatimResponsePolygon.self, from: data).geometry
+            let wrapper = GeoJsonWrapperPolygon(type: "FeatureCollection",
+                                                features: [.init(type: "Feature",
+                                                                 properties: [:],
+                                                                 geometry: geometry)]
+                                               )
+            return JSON(wrapper).allowCORS()
             
         default:
             throw RegionError.unknownGeometryType
         }
-        let encoder = JSONEncoder()
-        let encodableBox = AnyEncodable(value: geometry)
-        let encodedGeoJson = try encoder.encode(encodableBox)
-        let recodedGeoJson = try decoder.decode(GeoJSON.self, from: encodedGeoJson)
-        return JSON(recodedGeoJson).allowCORS()
-        
     }
 }
+
+struct GeoJsonWrapperMultiPolygon: Codable {
+    struct WrapperFeature: Codable {
+        let type: String
+        let properties: [String: String]?
+        let geometry: NominatimResponseMultiPolygon.Geometry
+    }
+    let type: String
+    let features: [WrapperFeature]
+}
+
+struct SingleWrappedFeature: Codable {
+    let type: String
+    let properties: [String: String]?
+    let geometry: NominatimResponsePolygon.Geometry
+}
+
+struct GeoJsonWrapperPolygon: Codable {
+    struct WrapperFeature: Codable {
+        let type: String
+        let properties: [String: String]
+        let geometry: NominatimResponsePolygon.Geometry
+    }
+    let type: String
+    let features: [WrapperFeature]
+}
+
+
+struct SimpleGeoJsonWrapper: Codable {
+    let geometry: NominatimResponseMultiPolygon.Geometry
+}
+
