@@ -29,6 +29,9 @@ enum RegionError: ReportableError {
             return StatusCode(code: 4, name: "unknownGeometryType")
         case .invalidParameter:
             return StatusCode(code: 3, name: "invalidParameter")
+        case .nominatimError:
+            return StatusCode(code: 5, name: "nominatimError")
+
         }
     }
     
@@ -43,25 +46,18 @@ enum RegionError: ReportableError {
             return "The parameter passed in was invalid"
         case .unknownGeometryType:
             return "The GeoJson returned was not a Polygon or Multipolygon"
+        case .nominatimError:
+            return "There was an error with the original data"
         }
     }
     
     var externallyVisible: Bool {
-        switch self {
-        
-        case .regionNotFound:
-            return true
-        case .invalidURL:
-            return true
-        case .invalidParameter:
-            return true
-        case .unknownGeometryType:
-            return true
-        }
+        return true
     }
     
     case regionNotFound
     case invalidURL
     case invalidParameter
     case unknownGeometryType
+    case nominatimError
 }
