@@ -12,11 +12,12 @@ import Foundation
 import FoundationNetworking
 #endif
 
-struct PostRegion: Responder {
+public struct PostRegion: Responder {
     @EnvironmentObject var database: Database
     @QueryParameter("osmid") var osmID: Int
-    
-    func execute() throws -> Response {
+    public init() {}
+
+    public func execute() throws -> Response {
         let fetch = try fetchFromNominatim(regionID: osmID)
         return try JSON(database.insertRegion(nominatim: fetch)).allowCORS()
     }

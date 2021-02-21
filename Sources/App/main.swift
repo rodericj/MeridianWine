@@ -1,19 +1,12 @@
-//
-//  main.swift
-//  MeridianDemo
-//
-//
-
 import Foundation
 import Backtrace
 import Meridian
+import MeridianWine
 
 #if canImport(FoundationNetworking)
 import FoundationNetworking
 #endif
-
 let configuration = URLSessionConfiguration.default
-Backtrace.install()
 
 Server(errorRenderer: BasicErrorRenderer())
     .group(prefix: "/region", errorRenderer: JSONErrorRenderer()) {
@@ -33,6 +26,9 @@ Server(errorRenderer: BasicErrorRenderer())
         GetRegionGeoJson()
             .on(.get("/\(\.id)/geojson"))
     }
+    .register({
+        BundledFiles(bundle: .module)
+    })
     .environmentObject(Database())
     .environmentObject(URLSession(configuration: configuration))
     .listen()

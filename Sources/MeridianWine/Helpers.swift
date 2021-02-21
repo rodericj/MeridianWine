@@ -12,12 +12,12 @@ import Meridian
 import FoundationNetworking
 #endif
 
-struct IDParameter: URLParameterKey {
+public struct IDParameter: URLParameterKey {
     public typealias DecodeType = String
 }
 
 extension ParameterKeys {
-    var id: IDParameter {
+    public var id: IDParameter {
         IDParameter()
     }
 }

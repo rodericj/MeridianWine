@@ -13,21 +13,22 @@ import Meridian
 import FoundationNetworking
 #endif
 
-struct GetRegions: Responder {
+public struct GetRegions: Responder {
     @EnvironmentObject var database: Database
-    
-    func execute() throws -> Response {
+    public init() {}
+    public func execute() throws -> Response {
         try JSON(database.fetchAllRegions())
             .allowCORS()
     }
 }
 
-struct GetRegionGeoJson: Responder {
+public struct GetRegionGeoJson: Responder {
     @EnvironmentObject var database: Database
     
-    @URLParameter(\.id) var id
-    
-    func execute() throws -> Response {
+    @URLParameter(\.id) public var id
+    public init() {}
+
+    public func execute() throws -> Response {
         // get this one from the database
         guard let uuid = UUID(uuidString: id) else {
             throw RegionError.invalidURL

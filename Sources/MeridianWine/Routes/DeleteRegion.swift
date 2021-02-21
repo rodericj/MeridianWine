@@ -13,14 +13,15 @@ enum DeleteError: Error {
 }
 
 extension ParameterKeys {
-    var regionID: RegionIDParameter { .init() }
+    public var regionID: RegionIDParameter { .init() }
 }
 
-struct DeleteRegion: Responder {
+public struct DeleteRegion: Responder {
     @EnvironmentObject var database: Database
-    @URLParameter(\.regionID) var regionID
+    @URLParameter(\.regionID) public var regionID
+    public init() {}
 
-    func execute() throws -> Response {
+    public func execute() throws -> Response {
         guard let regionUUID = UUID(uuidString: regionID) else {
             throw DeleteError.invalidUUIDParameter
         }

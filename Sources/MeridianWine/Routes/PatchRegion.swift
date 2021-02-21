@@ -8,21 +8,22 @@
 import Foundation
 import Meridian
 
-struct RegionIDParameter: URLParameterKey {
+public struct RegionIDParameter: URLParameterKey {
     public typealias DecodeType = String
 }
 
 extension ParameterKeys {
-    var parentID: RegionIDParameter { .init() }
-    var childID: RegionIDParameter { .init() }
+    public var parentID: RegionIDParameter { .init() }
+    public var childID: RegionIDParameter { .init() }
 }
 
-struct PatchRegion: Responder {
+public struct PatchRegion: Responder {
     @EnvironmentObject var database: Database
     @QueryParameter("parent_id") var parentID: String
     @URLParameter(\.childID) var childID
+    public init() {}
 
-    func execute() throws -> Response {
+    public func execute() throws -> Response {
         print(childID, parentID)
         guard let childUUID = UUID(uuidString: childID),
               let parentUUID = UUID(uuidString: parentID) else {
