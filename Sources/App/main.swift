@@ -9,8 +9,17 @@ import FoundationNetworking
 let configuration = URLSessionConfiguration.default
 
 Server(errorRenderer: BasicErrorRenderer())
+    .register({
+        GetRegionHTML()
+            .on(.get(.root))
+        
+        BundledFiles(bundle: .module)
+    })
     .group(prefix: "/region", errorRenderer: JSONErrorRenderer()) {
 
+        GetRegions()
+            .on(.get(.root))
+        
         GetRegions()
             .on(.get(.root))
         
@@ -22,13 +31,12 @@ Server(errorRenderer: BasicErrorRenderer())
         
         PatchRegion()
             .on(.patch("/\(\.childID)"))
-
+        
         GetRegionGeoJson()
             .on(.get("/\(\.id)/geojson"))
+        
     }
-    .register({
-        BundledFiles(bundle: .module)
-    })
+    
     .environmentObject(Database())
     .environmentObject(URLSession(configuration: configuration))
     .listen()
