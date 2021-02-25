@@ -5,7 +5,6 @@ import Meridian
 public struct GetRegionHTML: Responder {
     @EnvironmentObject var database: Database
 
-    let id: String = "C696C550-57F5-44EF-AB3A-28E03300EE47"
     public init() {}
     
     private func createRegionCard(region: Region, parentID: String) -> Node {
@@ -14,7 +13,8 @@ public struct GetRegionHTML: Responder {
                 name: region.title,
                 uuid: region.id,
                 collapseTargetName: "collapse-\(region.id.uuidString)",
-                headingID: "heading-\(region.id.uuidString)"
+                headingID: "heading-\(region.id.uuidString)",
+                hasChildren: !region.children.isEmpty
             )
             div(
                 class: "collapse show",
@@ -31,9 +31,17 @@ public struct GetRegionHTML: Responder {
         }
     }
     
-    private func createRegionCard(name: String, uuid: UUID, collapseTargetName: String, headingID: String) -> Node {
-        return div(class: "card-header", id: headingID) {
-            h5(class: "mb-0") {
+    private func createRegionCard(name: String, uuid: UUID, collapseTargetName: String, headingID: String, hasChildren: Bool) -> Node {
+        return div(class: "d-flex justify-content-between bd-highlight", id: headingID) {
+            button(class: "btn btn-link",
+                   type: "button",
+                   customAttributes: [
+                    "onClick": "updateMap('\(uuid.uuidString)');"
+                   ]
+            ) {
+                name
+            }
+            if hasChildren {
                 button(class: "btn btn-link",
                        type: "button",
                        customAttributes: [
@@ -41,10 +49,9 @@ public struct GetRegionHTML: Responder {
                         "data-target" : "#\(collapseTargetName)",
                         "aria-expanded" : "true",
                         "aria-controls" : collapseTargetName,
-                        "onClick": "updateMap('\(uuid.uuidString)');"
                        ]
                 ) {
-                    name
+                    ">"
                 }
             }
         }
@@ -121,21 +128,19 @@ public struct GetRegionHTML: Responder {
             }
             body {
                 div(class: "row") {
-                    div(class: "col-md-2") {
+                    div(class: "col-md-3") {
                         div(class: "accordian", id: "regionTable") {
                             regions.map { region in
                                 createRegionCard(region: region, parentID: "regionTable")
                             }
                         }
                     }
-                    div(class: "col-md-10") {
-//                        "map"
+                    div(class: "col-md-9") {
                         div(id: "map")
                     }
                 }
                 script {
                     """
-
                     mapboxgl.accessToken = 'pk.eyJ1Ijoicm9kZXJpYyIsImEiOiJja2t2ajNtMXMxZjdjMm9wNmYyZHR1ZWN3In0.mM6CghYW2Uil53LD5uQrGw';
 
                     var map = new mapboxgl.Map({
