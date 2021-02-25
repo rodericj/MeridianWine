@@ -86,7 +86,7 @@ public struct GetRegionHTML: Responder {
                 """
                 function updateMap(regionUUID) {
                     console.log(regionUUID)
-                    var url = 'http://localhost:3000/region/' + regionUUID + '/geojson'
+                    var url = '/region/' + regionUUID + '/geojson'
                     $.getJSON(url, function (geojson) {
                         var bbox = turf.extent(geojson);
                         var center = turf.center(geojson);
