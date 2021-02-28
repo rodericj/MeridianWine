@@ -7,55 +7,6 @@ public struct GetRegionHTML: Responder {
 
     public init() {}
     
-    private func createRegionCard(region: Region, parentID: String, depth: Int) -> Node {
-        return div {
-            createRegionCard(
-                name: "\(depth) \(region.title)",
-                uuid: region.id,
-                collapseTargetName: "collapse-\(region.id.uuidString)",
-                headingID: "heading-\(region.id.uuidString)",
-                hasChildren: !region.children.isEmpty
-            )
-            div(
-                class: "collapse show",
-                id: "collapse-\(region.id.uuidString)",
-                customAttributes: [
-                    "aria-labelledby": "heading-\(region.id.uuidString)",
-                    "data-parent": "#regionTable",
-                ]) {
-                region.children.map { region in
-                    createRegionCard(region: region, parentID: region.id.uuidString, depth: depth + 1)
-                }
-            }
-            
-        }
-    }
-    
-    private func createRegionCard(name: String, uuid: UUID, collapseTargetName: String, headingID: String, hasChildren: Bool) -> Node {
-        return div(class: "d-flex justify-content-between bd-highlight gap-3", id: headingID) {
-            button(class: "btn btn-link",
-                   type: "button",
-                   customAttributes: [
-                    "onClick": "updateMap('\(uuid.uuidString)');"
-                   ]
-            ) {
-                name
-            }
-            if hasChildren {
-                button(class: "btn btn-link",
-                       type: "button",
-                       customAttributes: [
-                        "data-toggle": "collapse",
-                        "data-target" : "#\(collapseTargetName)",
-                        "aria-expanded" : "true",
-                        "aria-controls" : collapseTargetName,
-                       ]
-                ) {
-                    ">"
-                }
-            }
-        }
-    }
     private var headerContent: Node {
         return header {
             script(src: "https://code.jquery.com/jquery-3.5.1.min.js")
@@ -103,6 +54,14 @@ public struct GetRegionHTML: Responder {
 
                 });
             }
+
+            $(document).ready(function () {
+
+                $('#sidebarCollapse').on('click', function () {
+                    $('#sidebar').toggleClass('active');
+                });
+
+            });
             """
             }
             style {
@@ -112,11 +71,146 @@ public struct GetRegionHTML: Responder {
                 """
             }
 
-            h1 {
-                "Wine Regions"
+            style {
+                """
+                .wrapper {
+                    display: flex;
+                    width: 100%;
+                    align-items: stretch;
+                }
+
+                .wrapper {
+                    display: flex;
+                    align-items: stretch;
+                }
+
+                #sidebar {
+                    min-width: 250px;
+                    max-width: 250px;
+                }
+
+                #sidebar.active {
+                    margin-left: -250px;
+                }
+
+                #sidebar {
+                    min-width: 250px;
+                    max-width: 250px;
+                    min-height: 100vh;
+                }
+
+                a[data-toggle="collapse"] {
+                    position: relative;
+                }
+
+                .dropdown-toggle::after {
+                    display: block;
+                    position: absolute;
+                    top: 50%;
+                    right: 20px;
+                    transform: translateY(-50%);
+                }
+
+                @media (max-width: 768px) {
+                    #sidebar {
+                        margin-left: -250px;
+                    }
+                    #sidebar.active {
+                        margin-left: 0;
+                    }
+                }
+
+                @import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
+
+
+                body {
+                    font-family: 'Poppins', sans-serif;
+                    background: #fafafa;
+                }
+
+                p {
+                    font-family: 'Poppins', sans-serif;
+                    font-size: 1.1em;
+                    font-weight: 300;
+                    line-height: 1.7em;
+                    color: #999;
+                }
+
+                a, a:hover, a:focus {
+                    color: inherit;
+                    text-decoration: none;
+                    transition: all 0.3s;
+                }
+
+                #sidebar {
+                    /* don't forget to add all the previously mentioned styles here too */
+                    background: #7386D5;
+                    color: #fff;
+                    transition: all 0.3s;
+                }
+
+                #sidebar .sidebar-header {
+                    padding: 20px;
+                    background: #6d7fcc;
+                }
+
+                #sidebar ul.components {
+                    padding: 20px 0;
+                    border-bottom: 1px solid #47748b;
+                }
+
+                #sidebar ul p {
+                    color: #fff;
+                    padding: 10px;
+                }
+
+                #sidebar ul li a {
+                    padding: 10px;
+                    font-size: 1.1em;
+                    display: block;
+                }
+                #sidebar ul li a:hover {
+                    color: #7386D5;
+                    background: #fff;
+                }
+
+                #sidebar ul li.active > a, a[aria-expanded="true"] {
+                    color: #fff;
+                    background: #6d7fcc;
+                }
+                ul ul a {
+                    font-size: 0.9em !important;
+                    padding-left: 30px !important;
+                    background: #6d7fcc;
+                }
+
+                """
             }
         }
 
+    }
+    
+    private func printRegionInSidebar(_ region: Region) -> Node {
+        // leaf node
+        if region.children.isEmpty {
+            return li { a(href:"#") {
+                region.title
+            }}
+        } else {
+            print("\(region.title) has \(region.children.count) children")
+            return li {
+                a(href: "#\(region.title)Submenu",
+                  customAttributes: ["data-toggle": "collapse",
+                                     "aria-expanded": "false",
+                                     "class": "dropdown-toggle"
+                  ]) {
+                    region.title
+                    ul(class: "collapse list-unstyled", id: "\(region.title)Submenu") {
+                        region.children.map { printRegionInSidebar($0) }
+                    }
+                }
+            }
+        }
     }
     
     public func execute() throws -> Response {
@@ -129,19 +223,28 @@ public struct GetRegionHTML: Responder {
             regions = regionsResponse.result
         }
         return html(lang: "en-US") {
-            title{ "Wine Regions" }
             headerContent
             body {
-                div(class: "row") {
-                    div(class: "col-md-3") {
-                        div(class: "accordian", id: "regionTable") {
-                            regions.map { region in
-                                createRegionCard(region: region, parentID: "regionTable", depth: 0)
+                // From here: https://bootstrapious.com/p/bootstrap-sidebar
+                div(class: "wrapper") {
+                    nav(id: "sidebar") {
+                        div(class: "sidebar-header") {
+                            h3 { "Wine Region" }
+                            ul(class: "list-unstyled components") {
+                                regions.map { printRegionInSidebar($0) }
                             }
                         }
                     }
-                    div(class: "col-md-9") {
+                    div(id: "content") {
                         div(id: "map")
+                        nav(class: "navbar navbar-expand-lg navbar-light bg-light") {
+                            div(class: "container-fluid") {
+                                button(class: "btn btn-info", id: "sidebarCollapse", type: "button") {
+                                    i(class: "fas fa-align-left")
+                                    span { "Toggle Sidebar" }
+                                }
+                            }
+                        }
                     }
                 }
                 script {
