@@ -7,10 +7,10 @@ public struct GetRegionHTML: Responder {
 
     public init() {}
     
-    private func createRegionCard(region: Region, parentID: String) -> Node {
-        return div(class: "card") {
+    private func createRegionCard(region: Region, parentID: String, depth: Int) -> Node {
+        return div {
             createRegionCard(
-                name: region.title,
+                name: "\(depth) \(region.title)",
                 uuid: region.id,
                 collapseTargetName: "collapse-\(region.id.uuidString)",
                 headingID: "heading-\(region.id.uuidString)",
@@ -24,7 +24,7 @@ public struct GetRegionHTML: Responder {
                     "data-parent": "#regionTable",
                 ]) {
                 region.children.map { region in
-                    createRegionCard(region: region, parentID: region.id.uuidString)
+                    createRegionCard(region: region, parentID: region.id.uuidString, depth: depth + 1)
                 }
             }
             
@@ -32,7 +32,7 @@ public struct GetRegionHTML: Responder {
     }
     
     private func createRegionCard(name: String, uuid: UUID, collapseTargetName: String, headingID: String, hasChildren: Bool) -> Node {
-        return div(class: "d-flex justify-content-between bd-highlight", id: headingID) {
+        return div(class: "d-flex justify-content-between bd-highlight gap-3", id: headingID) {
             button(class: "btn btn-link",
                    type: "button",
                    customAttributes: [
@@ -136,7 +136,7 @@ public struct GetRegionHTML: Responder {
                     div(class: "col-md-3") {
                         div(class: "accordian", id: "regionTable") {
                             regions.map { region in
-                                createRegionCard(region: region, parentID: "regionTable")
+                                createRegionCard(region: region, parentID: "regionTable", depth: 0)
                             }
                         }
                     }
