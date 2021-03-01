@@ -14,9 +14,6 @@ public struct GetRegionHTML: Responder {
             script(src: "https://api.mapbox.com/mapbox.js/plugins/turf/v2.0.2/turf.min.js")
             script(src: "https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js")
             "<link href='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet' />"
-            script(crossorigin: "anonymous",
-                   integrity: "sha384-KsvD1yqQ1/1+IA7gi3P0tyJcT3vR+NdBTt13hSJ2lnve8agRGXTTyNaBYmCR/Nwi",
-                   src: "https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js")
             script(src: "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")
             "<link rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css\">"
             script(crossorigin: "anonymous",
