@@ -206,9 +206,9 @@ public struct GetRegionHTML: Responder {
                                      "class": "dropdown-toggle"
                   ]) {
                     region.title
-                    ul(class: "collapse list-unstyled", id: "\(region.title)Submenu") {
-                        region.children.map { printRegionInSidebar($0) }
-                    }
+                }
+                ul(class: "collapse list-unstyled", id: "\(region.title)Submenu") {
+                    region.children.map { printRegionInSidebar($0) }
                 }
             }
         }
