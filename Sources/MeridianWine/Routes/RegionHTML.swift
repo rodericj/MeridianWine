@@ -191,16 +191,20 @@ public struct GetRegionHTML: Responder {
     private func printRegionInSidebar(_ region: Region) -> Node {
         // leaf node
         if region.children.isEmpty {
-            return li { a(href:"#") {
-                region.title
-            }}
+            return li {
+                a(href:"#",
+                  customAttributes: ["onclick": "updateMap('\(region.id)')"]) {
+                    region.title
+                }
+            }
         } else {
             print("\(region.title) has \(region.children.count) children")
             return li {
                 a(href: "#\(region.title)Submenu",
                   customAttributes: ["data-toggle": "collapse",
                                      "aria-expanded": "false",
-                                     "class": "dropdown-toggle"
+                                     "class": "dropdown-toggle",
+                                     "onclick": "updateMap('\(region.id)')"
                   ]) {
                     region.title
                 }
