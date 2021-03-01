@@ -9,6 +9,7 @@ public struct GetRegionHTML: Responder {
     
     private var headerContent: Node {
         return header {
+            meta(charset: "utf-8", content: "text/html", httpEquiv: "Content-Type")
             script(src: "https://code.jquery.com/jquery-3.5.1.min.js")
             script(src: "https://api.mapbox.com/mapbox.js/plugins/turf/v2.0.2/turf.min.js")
             script(src: "https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js")
