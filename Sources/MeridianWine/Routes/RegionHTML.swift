@@ -200,7 +200,7 @@ public struct GetRegionHTML: Responder {
         } else {
             print("\(region.title) has \(region.children.count) children")
             return li {
-                a(href: "#\(region.title)Submenu",
+                a(href: "#\(region.spacelessTitle)Submenu",
                   customAttributes: ["data-toggle": "collapse",
                                      "aria-expanded": "false",
                                      "class": "dropdown-toggle",
@@ -208,7 +208,7 @@ public struct GetRegionHTML: Responder {
                   ]) {
                     region.title
                 }
-                ul(class: "collapse list-unstyled", id: "\(region.title)Submenu") {
+                ul(class: "collapse list-unstyled", id: "\(region.spacelessTitle)Submenu") {
                     region.children.map { printRegionInSidebar($0) }
                 }
             }
@@ -264,5 +264,11 @@ public struct GetRegionHTML: Responder {
                 }
             }
         }
+    }
+}
+
+extension Region {
+    var spacelessTitle: String {
+        title.replacingOccurrences(of: " ", with: "")
     }
 }
