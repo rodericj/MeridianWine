@@ -19,16 +19,15 @@ extension ParameterKeys {
 
 public struct PatchRegion: Responder {
     @EnvironmentObject var database: Database
-    @QueryParameter("parent_id") var parentID: String
+    @QueryParameter("parent_id") var parentID: String?
+    @QueryParameter("title") var title: String?
     @URLParameter(\.childID) var childID
     public init() {}
 
     public func execute() throws -> Response {
-        print(childID, parentID)
-        guard let childUUID = UUID(uuidString: childID),
-              let parentUUID = UUID(uuidString: parentID) else {
+        guard let childUUID = UUID(uuidString: childID) else {
             throw RegionError.invalidURL
         }
-        return try JSON(database.updateParent(parent: parentUUID, child: childUUID)).allowCORS()
+        return try JSON(database.update(parent: parentID, title: title, child: childUUID)).allowCORS()
     }
 }

@@ -61,11 +61,25 @@ public final class Database {
         return Status(status: "OK")
     }
     
-    func updateParent(parent: UUID, child: UUID) throws -> JsonResponse<Region>? {
-        return try connection.execute("UPDATE osmregion SET parent_id = $1 WHERE id = $2 RETURNING *;",
-                                      [parent.uuidString, child.uuidString])
-            .decode(DatabaseRegion.self).map { JsonResponse(result: Region($0)) }
-            .first
+    func update(parent: String?, title: String?, child: UUID) throws -> JsonResponse<Region>? {
+        if let parent = parent, let parentUUID = UUID(uuidString: parent), let title = title {
+            return try connection.execute("UPDATE osmregion SET parent_id = $1, title = $2 WHERE id = $3 RETURNING *;",
+                                      [parentUUID.uuidString, title, child.uuidString])
+                .decode(DatabaseRegion.self).map { JsonResponse(result: Region($0)) }
+                .first
+        } else if let parent = parent, let parentUUID = UUID(uuidString: parent) {
+            return try connection.execute("UPDATE osmregion SET parent_id = $1 WHERE id = $2 RETURNING *;",
+                                          [parentUUID.uuidString, child.uuidString])
+                .decode(DatabaseRegion.self).map { JsonResponse(result: Region($0)) }
+                .first
+        } else if let title = title {
+            return try connection.execute("UPDATE osmregion SET title = $1 WHERE id = $2 RETURNING *;",
+                                          [title, child.uuidString])
+                .decode(DatabaseRegion.self).map { JsonResponse(result: Region($0)) }
+                .first
+        } else {
+            return nil
+        }
     }
     
     func insertRegion(nominatim: NominatimResponseTypeCheck) throws -> JsonResponse<Region>? {
@@ -85,6 +99,7 @@ public final class Database {
             throw error
         }
     }
+    
    
     func fetchRegion(uuid: UUID) throws -> Region? {
         let query = "SELECT * FROM osmregion WHERE id = $1"
