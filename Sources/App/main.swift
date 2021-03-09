@@ -8,6 +8,8 @@ import FoundationNetworking
 #endif
 let configuration = URLSessionConfiguration.default
 
+Backtrace.install()
+
 Server(errorRenderer: BasicErrorRenderer())
     .register({
         GetRegionHTML()
