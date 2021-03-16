@@ -15,6 +15,9 @@ Server(errorRenderer: BasicErrorRenderer())
         GetRegionHTML()
             .on(.get(.root))
         
+        GetSpecificRegionHTML()
+            .on(.get("/\(\.regionID)"))
+
         BundledFiles(bundle: .module)
     })
     .group(prefix: "/region", errorRenderer: JSONErrorRenderer()) {
