@@ -14,9 +14,6 @@ Server(errorRenderer: BasicErrorRenderer())
     .register({
         GetRegionHTML()
             .on(.get(.root))
-        
-        GetSpecificRegionHTML()
-            .on(.get("/\(\.regionID)"))
 
         BundledFiles(bundle: .module)
     })
@@ -40,6 +37,8 @@ Server(errorRenderer: BasicErrorRenderer())
         GetRegionGeoJson()
             .on(.get("/\(\.id)/geojson"))
         
+        GetSpecificRegionHTML()
+            .on(.get("/\(\.regionID)"))
     }
     
     .environmentObject(Database())
